@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"runtime"
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -39,6 +40,17 @@ func RequiredIf(cond bool) validation.RuleFunc {
 		}
 
 		return nil
+	}
+}
+
+// PanicIf паника если выполнено условие
+func PanicIf(cond bool) {
+	if cond {
+		if pc, file, line, ok := runtime.Caller(1); ok {
+			details := runtime.FuncForPC(pc)
+			place := fmt.Sprintf("%s (%s:%d)", details.Name(), file, line)
+			panic(place)
+		}
 	}
 }
 
